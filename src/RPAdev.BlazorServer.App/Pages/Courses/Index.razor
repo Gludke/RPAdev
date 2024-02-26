@@ -1,0 +1,114 @@
+﻿@page "/"
+@using RPAdev.Domain.Interfaces
+@inject ICourseService _courseService
+
+<h1>Cursos</h1>
+
+@if (isLoading){
+    <Loading />
+}
+
+<div style="display: flex; align-items: center;">
+    <input style="margin-top: 20px; margin-bottom: 20px; border-radius: 10px; padding: 5px;"
+           type="text" @bind="_searchQuery" placeholder="Digite o nome do curso">
+    <button style="margin-left: 10px; border-radius: 10px; padding: 10px; background-color: #217C87; border: none; color: white;"
+            @onclick="Search">
+        Buscar
+    </button>
+</div>
+
+@if (showAlertMessage){
+    <AlertMessage IsSuccess="IsSuccess" Message="@Message" />
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <td style="text-align: center;"><b>TÍTULO</b></td>
+            <td style="text-align: center;"><b>PROFESSORES</b></td>
+            <td style="text-align: center;"><b>CARGA HORÁRIA</b></td>
+            <td style="text-align: center;"><b>DESCRIÇÃO</b></td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in _courses.OrderBy(c => c.Title))
+        {
+            <tr>
+                <td>@c.Title</td>
+                <td>@c.Teachers</td>
+                <td>@c.Workload</td>
+                <td>@c.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+@code {
+    public IEnumerable<Course> _courses = new List<Course>();
+    private string _searchQuery = "";
+    private bool isLoading = false;
+
+    private bool showAlertMessage = false;
+    private bool IsSuccess = true;
+    private string Message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _courses = await _courseService.GetAll();
+    }
+
+    private async Task Search()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+            await Task.Delay(20);
+
+            if (!string.IsNullOrEmpty(_searchQuery))
+            {
+                var response = await _courseService.SearchCourseInAlura(_searchQuery);
+
+                isLoading = false;
+
+                if (response.IsSuccessful)
+                {
+                    showAlertMessage = true;
+                    IsSuccess = response.IsSuccessful;
+                    Message = response.Message;
+                    _courses = await _courseService.GetAll();
+
+                    StateHasChanged();
+                    await Task.Delay(3000);
+                }
+                else
+                {    
+                    showAlertMessage = true;
+                    IsSuccess = response.IsSuccessful;
+                    Message = response.Message;
+
+                    StateHasChanged();
+                    await Task.Delay(3000);
+                }
+            }
+
+            isLoading = false;
+            showAlertMessage = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+        }
+        finally
+        {
+            isLoading = false;
+            showAlertMessage = false;
+            StateHasChanged();
+        }
+    }
+}
+
+
