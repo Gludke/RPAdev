@@ -34,9 +34,10 @@ https://dotnet.microsoft.com/pt-br/download/dotnet/6.0
 https://www.microsoft.com/pt-br/sql-server/sql-server-downloads
 ```
 3. Baixar o repositório.
-4. No arquivo 'appsettings.json', trocar a URL de conexão 'ConnectionStrings' - 'Default' para a do seu bando de dados SQL Server.
+4. No arquivo 'appsettings.json', trocar a URL de conexão 'ConnectionStrings' - 'Default' para a do seu banco de dados SQL Server.
 
-Não é necessário criar o Banco de dados, isso será feito automaticamente pelo EF Core.
+Não é necessário criar o banco de dados, isso será feito automaticamente pelo EF Core.
+
 5. Executar as migrations conforme abaixo:
 
 No Visual Sudio, abrir o 'Console do gerenciador de pacotes', selecionar o projeto 'RPAdev.Data' e executar o comando:
